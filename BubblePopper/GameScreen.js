@@ -71,9 +71,13 @@ export default function GameScreen() {
   
   // Fixed gun position - currently in the middle (MODIFY THIS)
   const gunWidth = 60;
-  const gunPosition = screenWidth / 2 - gunWidth / 2;
+  // const gunPosition = screenWidth / 2 - gunWidth / 2;
   const gunCenterX = screenWidth / 2;
-  
+
+  const [gunPosition, setGunPosition] = useState({
+    x: screenWidth / 2 - gunWidth / 2,
+    y: screenHeight - 70
+  });
   /**
    * ============== STUDENT TASK 2 ==============
    * TODO: IMPLEMENT GUN MOVEMENT
@@ -96,13 +100,18 @@ export default function GameScreen() {
   const timerRef = useRef(null);
   const bubbleTimerRef = useRef(null);
   const laserTimeoutRef = useRef(null);
-  
+
+  const handleTouchMove = (event) => {  
+    const { locationX, locationY } = event.nativeEvent;
+    setGunPosition({ x: locationX - gunWidth/2, y: locationY });
+  };
   /**
    * Handle tap to shoot laser
    * Currently fires the laser on any tap when game is active
    */
-  const handleTap = () => {
+  const handleTap = (event) => {
     if (!gameStarted || gameOver) return;
+    handleTouchMove(event);
     fireLaser();
   };
   
@@ -115,7 +124,7 @@ export default function GameScreen() {
     if (laserTimeoutRef.current) {
       clearTimeout(laserTimeoutRef.current);
     }
-    
+  
     // Make laser visible
     setLaserVisible(true);
     
@@ -319,6 +328,7 @@ export default function GameScreen() {
            * 2. Add visual effects (color, thickness, etc.)
            * 3. Consider adding a cooldown or power meter
            */}
+
           
           {/* Laser - currently fixed to fire from center of gun */}
           {laserVisible && (
@@ -341,7 +351,7 @@ export default function GameScreen() {
            */}
           
           {/* Gun - currently static in middle */}
-          <View style={[styles.gun, { left: gunPosition }]}>
+          <View style={[styles.gun, { left: gunPosition.x, top: gunPosition.y }]}>
             <View style={styles.gunBase} />
             <View style={styles.gunBarrel} />
           </View>
@@ -446,7 +456,8 @@ const styles = StyleSheet.create({
   },
   gun: {
     position: 'absolute',
-    bottom: 10,
+    left: 0,
+    top: 0,
     width: 60,
     height: 60,
     justifyContent: 'center',
