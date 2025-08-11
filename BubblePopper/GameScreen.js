@@ -103,7 +103,7 @@ export default function GameScreen() {
 
   const handleTouchMove = (event) => {  
     const { locationX, locationY } = event.nativeEvent;
-    setGunPosition({ x: locationX - gunWidth/2, y: locationY });
+    setGunPosition({ x: locationX - gunWidth/2, y: screenHeight - 70});
   };
   /**
    * Handle tap to shoot laser
@@ -119,7 +119,7 @@ export default function GameScreen() {
    * Fire a laser from the gun center
    * Creates visible laser and checks for bubble hits
    */
-  const fireLaser = () => {
+  const fireLaser = (laserX) => {
     // Clear any existing laser timeout
     if (laserTimeoutRef.current) {
       clearTimeout(laserTimeoutRef.current);
@@ -145,8 +145,7 @@ export default function GameScreen() {
      */
     
     // Check for hits immediately
-    checkHits(gunCenterX);
-    
+    checkHits(laserX);
     // Make laser disappear after 300ms
     laserTimeoutRef.current = setTimeout(() => {
       setLaserVisible(false);
@@ -307,7 +306,7 @@ export default function GameScreen() {
   return (
     <View style={styles.container}>
       {/* Game area */}
-      <TouchableWithoutFeedback onPress={handleTap} disabled={!gameStarted || gameOver}>
+      <TouchableWithoutFeedback onPressIn={handleTap} disabled={!gameStarted || gameOver}>
         <View style={styles.gameArea}>
           {/* Bubbles */}
           {bubbles.map(bubble => (
@@ -335,7 +334,7 @@ export default function GameScreen() {
             <View
               style={[
                 styles.laser,
-                { left: gunCenterX - 2 } // Center the 4px wide laser from gun center
+                { left: gunPosition.x + gunWidth/2} // Center the 4px wide laser from gun center
               ]}
             />
           )}
@@ -405,7 +404,7 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000033',
+    backgroundColor: 'indigo',
   },
   gameArea: {
     flex: 1,
@@ -457,7 +456,6 @@ const styles = StyleSheet.create({
   gun: {
     position: 'absolute',
     left: 0,
-    top: 0,
     width: 60,
     height: 60,
     justifyContent: 'center',
@@ -487,8 +485,8 @@ const styles = StyleSheet.create({
     top: 0,
     width: 4,
     height: '100%',
-    backgroundColor: '#ff0000',
-    shadowColor: '#ff0000',
+    backgroundColor: '#ff00e6ff',
+    shadowColor: '#fbc5eeff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 10,
