@@ -145,7 +145,7 @@ export default function GameScreen() {
      */
     
     // Check for hits immediately
-    checkHits(laserX);
+    checkHits(gunPosition.x + gunWidth/2, gunPosition.y);
     // Make laser disappear after 300ms
     laserTimeoutRef.current = setTimeout(() => {
       setLaserVisible(false);
